@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.witoldbrzezinski.SocialNetwork.entity.AppUser;
 import pl.witoldbrzezinski.SocialNetwork.entity.Role;
+import pl.witoldbrzezinski.SocialNetwork.entity.RoleEnum;
 import pl.witoldbrzezinski.SocialNetwork.service.AppUserService;
 
 import java.net.URI;
@@ -38,7 +39,7 @@ public class UserController {
 
     @PostMapping("/role/addToUser")
     public ResponseEntity<?>addRoleToUser(@RequestBody RoleToUserForm form){
-        userService.addRoleToUser(form.getUsername(),form.getRoleName());
+        userService.addRoleToUser(form.getUsername(),form.getRoleEnum());
         return ResponseEntity.ok().build();
     }
 
@@ -46,5 +47,5 @@ public class UserController {
 @Data
 class RoleToUserForm {
     private String username;
-    private String roleName;
+    private RoleEnum roleEnum;
 }

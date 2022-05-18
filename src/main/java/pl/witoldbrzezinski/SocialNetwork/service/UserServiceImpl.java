@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.witoldbrzezinski.SocialNetwork.entity.AppUser;
 import pl.witoldbrzezinski.SocialNetwork.entity.Role;
+import pl.witoldbrzezinski.SocialNetwork.entity.RoleEnum;
 import pl.witoldbrzezinski.SocialNetwork.repository.AppUserRepository;
 import pl.witoldbrzezinski.SocialNetwork.repository.RoleRepository;
 
@@ -33,9 +34,9 @@ public class UserServiceImpl implements AppUserService{
     }
 
     @Override
-    public void addRoleToUser(String username, String roleName) {
+    public void addRoleToUser(String username, RoleEnum roleEnum) {
         AppUser user = userRepository.findByUsername(username);
-        Role role = roleRepository.findByRole(roleName);
+        Role role = roleRepository.findByRole(roleEnum);
         user.getRoles().add(role);
     }
 

@@ -7,8 +7,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
@@ -37,7 +35,7 @@ public class AppUser {
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
-    private String lasName;
+    private String lastName;
 
     @ManyToMany(fetch = EAGER, cascade=ALL)
     @JoinTable(
@@ -47,14 +45,14 @@ public class AppUser {
     private Collection<Role> roles = new ArrayList<>();
 
     public AppUser(String username, String password, String matchingPassword, int enabled,
-                   String email, String firstName, String lasName, Collection<Role> roles) {
+                   String email, String firstName, String lastName, Collection<Role> roles) {
         this.username = username;
         this.password = password;
         this.matchingPassword = matchingPassword;
         this.enabled = enabled;
         this.email = email;
         this.firstName = firstName;
-        this.lasName = lasName;
+        this.lastName = lastName;
         this.roles = roles;
     }
 }
