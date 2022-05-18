@@ -10,17 +10,7 @@ CREATE TABLE users
   last_name CHARACTER VARYING(100) NOT NULL
 );
 
-DROP TABLE IF EXISTS authorities CASCADE;
 
-CREATE TABLE authorities
-(
- username CHARACTER VARYING(50) NOT NULL,
- authority CHARACTER VARYING(50) NOT NULL,
- UNIQUE (username,authority)
-) ;
-
-ALTER TABLE ONLY authorities
-    ADD CONSTRAINT fk_user FOREIGN KEY (username) REFERENCES users(username);
 
 CREATE TABLE roles
 (
