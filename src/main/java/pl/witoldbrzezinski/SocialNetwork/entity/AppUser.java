@@ -1,20 +1,28 @@
 package pl.witoldbrzezinski.SocialNetwork.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.EAGER;
 
 @Entity
-@Getter @Setter @NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name="users")
 public class AppUser {
 
     @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="user_id")
     private Long id;
     @Column(name = "username", unique=true)
     private String username;
@@ -31,5 +39,22 @@ public class AppUser {
     @Column(name = "last_name")
     private String lasName;
 
+    @ManyToMany(fetch = EAGER, cascade=ALL)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Collection<Role> roles = new ArrayList<>();
 
+    public AppUser(String username, String password, String matchingPassword, int enabled,
+                   String email, String firstName, String lasName, Collection<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.matchingPassword = matchingPassword;
+        this.enabled = enabled;
+        this.email = email;
+        this.firstName = firstName;
+        this.lasName = lasName;
+        this.roles = roles;
+    }
 }
