@@ -28,7 +28,9 @@ public class UserController {
     @PostMapping("/user/save")
     public ResponseEntity<AppUser>saveUser(@RequestBody AppUser user){
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("api/user/save").toUriString());
-        return ResponseEntity.created(uri).body(userService.saveUser(user));
+        ResponseEntity<AppUser> userResponseEntity = ResponseEntity.created(uri).body(userService.saveUser(user));
+        userService.addRoleToUser(user.getUsername(),RoleEnum.ROLE_USER);
+        return userResponseEntity;
     }
 
     @PostMapping("/role/save")
