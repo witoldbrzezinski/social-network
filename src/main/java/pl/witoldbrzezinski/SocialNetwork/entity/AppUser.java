@@ -9,7 +9,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 
 @Entity
@@ -39,7 +38,7 @@ public class AppUser {
     @Column(name = "last_name")
     private String lastName;
 
-    @ManyToMany(fetch = EAGER, cascade=ALL)
+    @ManyToMany(fetch = EAGER, cascade={CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH,CascadeType.PERSIST})
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

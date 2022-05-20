@@ -67,7 +67,7 @@ public class UserControllerTest {
     @Test
     public void postingNewUserShouldCreateUser() throws Exception {
         when(userService.saveUser(any(AppUser.class))).thenReturn(user);
-        mockMvc.perform(post("/api/user/save")
+        mockMvc.perform(post("/api/users/save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isCreated());
@@ -77,7 +77,7 @@ public class UserControllerTest {
     public void postingNewRoleShouldCreateRole() throws Exception {
         Role role = new Role(3L, RoleEnum.ROLE_TEST);
         when(userService.saveRole(any(Role.class))).thenReturn(role);
-        mockMvc.perform(post("/api/role/save")
+        mockMvc.perform(post("/api/roles/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(role)))
                 .andExpect(status().isCreated());

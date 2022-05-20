@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -40,7 +41,42 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @PostMapping("/user/save")
+    @GetMapping("/users/{id}")
+    public ResponseEntity<Optional<AppUser>> getUserById(@PathVariable("id") long id){
+        Optional<AppUser> user = userService.getUserById(id);
+        if (user.isPresent()){
+            return ResponseEntity.ok().body(user);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<AppUser> updateUserById(@PathVariable("id") long id, @RequestBody AppUser user){
+        Optional<AppUser> userToUpdate = userService.getUserById(id);
+        if (userToUpdate.isPresent()){
+            AppUser newUser = userToUpdate.get();
+            newUser.setEmail(user.getEmail());
+            newUser.setFirstName(user.getFirstName());
+            newUser.setLastName(user.getLastName());
+            return new ResponseEntity<>(userService.saveUser(newUser),HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<HttpStatus> deleteUserById(@PathVariable("id") long id){
+        try {
+            userService.deleteUserById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception exception){
+            exception.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/users/save")
     public ResponseEntity<AppUser>saveUser(@RequestBody AppUser user){
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("api/user/save").toUriString());
         ResponseEntity<AppUser> userResponseEntity = ResponseEntity.created(uri).body(userService.saveUser(user));
@@ -48,13 +84,13 @@ public class UserController {
         return userResponseEntity;
     }
 
-    @PostMapping("/role/save")
+    @PostMapping("/roles/save")
     public ResponseEntity<Role>saveRole(@RequestBody Role role){
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("api/role/save").toUriString());
         return ResponseEntity.created(uri).body(userService.saveRole(role));
     }
 
-    @PostMapping("/role/addToUser")
+    @PostMapping("/roles/addToUser")
     public ResponseEntity<?>addRoleToUser(@RequestBody RoleToUserForm form){
         userService.addRoleToUser(form.getUsername(),form.getRoleEnum());
         return ResponseEntity.ok().build();
@@ -70,7 +106,7 @@ public class UserController {
                 JWTVerifier verifier = JWT.require(utils.getDefaultJWTAlgorithm()).build();
                 DecodedJWT decodedJWT = verifier.verify(refreshToken);
                 String username = decodedJWT.getSubject();
-                AppUser user = userService.getUser(username);
+                AppUser user = userService.getUserByUsername(username);
                 String accessToken = JWT.create()
                         .withSubject(user.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))

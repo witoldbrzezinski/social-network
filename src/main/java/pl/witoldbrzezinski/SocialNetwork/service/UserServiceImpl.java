@@ -12,6 +12,7 @@ import pl.witoldbrzezinski.SocialNetwork.repository.RoleRepository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,12 +42,24 @@ public class UserServiceImpl implements AppUserService{
     }
 
     @Override
-    public AppUser getUser(String username) {
+    public AppUser getUserByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public Optional<AppUser> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 
     @Override
     public List<AppUser> getUsers() {
         return userRepository.findAll();
     }
+
+    @Override
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+
 }
