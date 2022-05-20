@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import pl.witoldbrzezinski.SocialNetwork.utils.Utils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,6 +28,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class AuthorizationFilter extends OncePerRequestFilter {
 
+    Utils utils = new Utils();
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh")){
@@ -36,8 +39,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             if (authorizationHeader!=null && authorizationHeader.startsWith("Bearer ")){
                 try {
                     String token = authorizationHeader.substring("Bearer ".length());
-                    Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-                    JWTVerifier verifier = JWT.require(algorithm).build();
+                    JWTVerifier verifier = JWT.require(utils.getDefaultJWTAlgorithm()).build();
                     DecodedJWT decodedJWT = verifier.verify(token);
                     String username = decodedJWT.getSubject();
                     String[] roles = decodedJWT.getClaim("roles").asArray(String.class);

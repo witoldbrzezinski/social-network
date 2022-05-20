@@ -2,7 +2,6 @@ package pl.witoldbrzezinski.SocialNetwork.api;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
@@ -14,6 +13,7 @@ import pl.witoldbrzezinski.SocialNetwork.entity.AppUser;
 import pl.witoldbrzezinski.SocialNetwork.entity.Role;
 import pl.witoldbrzezinski.SocialNetwork.entity.RoleEnum;
 import pl.witoldbrzezinski.SocialNetwork.service.AppUserService;
+import pl.witoldbrzezinski.SocialNetwork.utils.Utils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +32,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserController {
 
     private final AppUserService userService;
+
+    Utils utils = new Utils();
 
     @GetMapping("/users")
     public ResponseEntity<List<AppUser>>getUsers(){
@@ -65,8 +67,7 @@ public class UserController {
         if (authorizationHeader!=null && authorizationHeader.startsWith("Bearer ")){
             try {
                 String refreshToken = authorizationHeader.substring("Bearer ".length());
-                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-                JWTVerifier verifier = JWT.require(algorithm).build();
+                JWTVerifier verifier = JWT.require(utils.getDefaultJWTAlgorithm()).build();
                 DecodedJWT decodedJWT = verifier.verify(refreshToken);
                 String username = decodedJWT.getSubject();
                 AppUser user = userService.getUser(username);
@@ -75,7 +76,7 @@ public class UserController {
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
                         .withClaim("roles",user.getRoles().stream().map(role -> role.getRole().toString()).collect(Collectors.toList()))
-                        .sign(algorithm);
+                        .sign(utils.getDefaultJWTAlgorithm());
                 Map<String, String> tokens = new HashMap<>();
                 tokens.put("accessToken",accessToken);
                 tokens.put("refreshToken",refreshToken);
