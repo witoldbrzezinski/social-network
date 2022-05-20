@@ -3,6 +3,7 @@ package pl.witoldbrzezinski.SocialNetwork.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import static javax.persistence.FetchType.EAGER;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 @Table(name="users")
 public class AppUser {
 
