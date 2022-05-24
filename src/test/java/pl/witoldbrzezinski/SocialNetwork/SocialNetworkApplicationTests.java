@@ -13,6 +13,7 @@ class SocialNetworkApplicationTests {
 	@Test
 	public void main() {
 		SocialNetworkApplication.main(new String[] {});
+
 	}
 
 }

@@ -19,16 +19,18 @@ import pl.witoldbrzezinski.SocialNetwork.service.UserServiceImpl;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(UserControllerTest.class)
 @AutoConfigureTestDatabase
@@ -51,6 +53,7 @@ public class UserControllerTest {
     public void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
         user = new AppUser("Test","1234",null,1,"test@test.com","Test","Test", Collections.emptyList());
+        user.setId(1L);
     }
 
     @Test
@@ -82,6 +85,40 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(role)))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    public void gettingUserByIdShouldReturnUser() throws Exception {
+        long id = user.getId();
+        when(userService.getUserById(id)).thenReturn(Optional.of(user));
+        mockMvc.perform(get("/api/users/{id}",id)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.username",is(user.getUsername())));
+    }
+
+    @Test
+    public void updatingUserShouldUpdateUser() throws Exception {
+        long id = user.getId();
+        AppUser updatedUser = new AppUser("Update","1234",null,1,"test@test.com","Update","Update", Collections.emptyList());
+        when(userService.getUserById(id)).thenReturn(Optional.of(user));
+        when(userService.saveUser(any(AppUser.class))).thenReturn(updatedUser);
+        mockMvc.perform(put("/api/users/{id}",id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedUser)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username",is(updatedUser.getUsername())));
+
+    }
+
+    @Test
+    public void deletingUserByIdShouldDeleteUserAndReturn204Response() throws Exception {
+        long id = user.getId();
+        doNothing().when(userService).deleteUserById(id);
+        mockMvc.perform(delete("/api/users/{id}",id)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andDo(print());
+    }
+
 
 
 }
