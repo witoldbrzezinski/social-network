@@ -61,5 +61,19 @@ public class UserServiceImpl implements AppUserService{
         userRepository.deleteById(id);
     }
 
+    @Override
+    public void addFriendToUser(String username, String friendName) {
+        AppUser user = userRepository.findByUsername(username);
+        AppUser friend = userRepository.findByUsername(friendName);
+        user.addFriend(friend);
+    }
+
+    @Override
+    public void removeFriendFromUser(String username, String friendName) {
+        AppUser user = userRepository.findByUsername(username);
+        AppUser friend = userRepository.findByUsername(friendName);
+        user.removeFriend(friend);
+    }
+
 
 }

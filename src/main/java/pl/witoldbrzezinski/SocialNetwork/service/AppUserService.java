@@ -16,6 +16,11 @@ public interface AppUserService {
     Optional<AppUser> getUserById(Long id);
     List<AppUser> getUsers();
     void deleteUserById(Long id);
+    void addFriendToUser(String username, String friendName);
+    void removeFriendFromUser(String username, String friendName);
+
+
+
 
 
 

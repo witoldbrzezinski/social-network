@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.witoldbrzezinski.SocialNetwork.entity.AppUser;
@@ -95,6 +97,14 @@ public class UserController {
         userService.addRoleToUser(form.getUsername(),form.getRoleEnum());
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/friends/addToUser")
+    public ResponseEntity<AppUser>addFriendToUser(@RequestBody AppUser friend){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        userService.addFriendToUser(auth.getName(),friend.getUsername());
+        return ResponseEntity.ok().build();
+    }
+
 
 
     @GetMapping("/token/refresh")
